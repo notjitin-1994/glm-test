@@ -1,86 +1,132 @@
-# GLM Chatbot Test
+# GLM Chatbot - Generative UI Edition
 
-A simple chatbot wrapper for Z.AI's GLM-5 model using the GLM Coding Plan API.
+A powerful chatbot powered by GLM-5.1 with dynamic UI generation using OpenUI.
 
-## Quick Start
+## ✨ Features
+
+### 🤖 AI-Powered Chat
+- Real-time streaming responses from GLM-5.1
+- Message history maintained throughout session
+- Beautiful gradient UI with responsive design
+
+### 🎨 Generative UI (NEW!)
+The chatbot can now **generate and display interactive UI components** dynamically:
+
+**Supported Components:**
+- 📊 **Charts** - Data visualizations with interactive graphs
+- 📋 **Cards** - Rich information cards with styled content
+- 📑 **Tables** - Sortable, filterable data tables
+- 📝 **Forms** - Interactive input forms for structured data
+- 🔘 **Buttons** - Action buttons with click handlers
+- 📁 **Lists** - Structured lists and item collections
+- 🎯 **Progress Bars** - Visual progress indicators
+- 📎 **Badges** - Status and category badges
+
+### How Generative UI Works
+
+1. **System Prompt**: The AI is instructed to use OpenUI Lang syntax
+2. **UI Generation**: GLM-5.1 generates compact OpenUI Lang markup instead of plain text
+3. **Streaming Rendering**: Components render progressively as tokens arrive
+4. **Interactive**: Users can click buttons, submit forms, interact with generated UI
+
+### Example Prompts
+
+Try asking the AI to generate UI:
+
+```
+"Show me a weather card for Bangalore"
+"Create a todo list with 3 items"
+"Display a bar chart of my sales data"
+"Build a contact form"
+"Show a table of users with status badges"
+```
+
+## 🚀 Live Demo
+
+**https://glm-test-two.vercel.app**
+
+## 🛠️ Tech Stack
+
+- **LLM**: GLM-5.1 (Z.AI Coding Plan)
+- **Generative UI**: OpenUI Lang
+- **Frontend**: React 19 + Vite
+- **Components**: @openuidev/react-ui (35+ components)
+- **Runtime**: @openuidev/react-lang (streaming parser)
+- **Styling**: CSS-in-JS with gradient theme
+
+## 📦 Installation
 
 ```bash
-cd ~/Desktop/GLM-chatbot-test
+# Clone the repo
+git clone https://github.com/notjitin-1994/glm-test.git
+cd glm-test
+
+# Install dependencies
 npm install
-npm start
+
+# Run development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
 ```
 
-Or use the automated setup script:
-```bash
-./quick-start.sh
+## 🔧 Configuration
+
+Edit `src/App.jsx` to customize:
+
+```javascript
+const API_KEY = 'your-api-key-here';
+const MODEL = 'glm-5.1';  // or glm-5-turbo, glm-4.7, glm-4.5-air
 ```
 
-## What's Included
+## 🎯 OpenUI Lang Syntax
 
-- ✅ **Ready-to-run chatbot** with your API key configured
-- ✅ **Streaming responses** for real-time interaction
-- ✅ **Message history** for conversation context
-- ✅ **Command system** (quit, clear, history)
-- ✅ **Multiple models** supported (glm-5.1, glm-5-turbo, glm-4.7, glm-4.5-air)
-- ✅ **Test scripts** for API verification
-- ✅ **Comprehensive documentation**
+The AI generates UI using a compact line-oriented language:
 
-## Project Structure
+```openui
+# Create a card
+card = Card({
+  title: "Weather",
+  body: Stack([
+    Text("☀️ Sunny, 28°C"),
+    Text("Bangalore, India")
+  ])
+})
 
-```
-GLM-chatbot-test/
-├── index.js              # Main chatbot application
-├── test-api.js           # API connection test
-├── test-api-verbose.js   # Verbose API test
-├── quick-start.sh        # Automated setup script
-├── .env                  # API configuration (with your key)
-├── package.json          # Dependencies
-├── README.md             # This file
-├── API_NOTES.md          # API documentation
-├── USAGE_EXAMPLES.md     # Usage examples
-└── PROJECT_STRUCTURE.md # Project overview
-```
+# Create a table
+table = Table({
+  columns: ["Name", "Role"],
+  rows: [
+    ["Alice", "Admin"],
+    ["Bob", "User"]
+  ]
+})
 
-## API Details
-
-- **Endpoint**: `https://api.z.ai/api/coding/paas/v4` (Coding Plan specific)
-- **Default Model**: `glm-5.1`
-- **Authentication**: Bearer token (configured in .env)
-- **Models Available**:
-  - `glm-5.1` - Flagship, best for complex tasks
-  - `glm-5-turbo` - Faster, good balance
-  - `glm-4.7` - Standard
-  - `glm-4.5-air` - Lightest, fastest
-
-## Features
-
-- Simple command-line chat interface
-- Message history context
-- Streaming responses
-- Command support: `quit`, `exit`, `clear`, `history`
-- Error handling and recovery
-- OpenAI-compatible API (uses OpenAI SDK)
-
-## Testing
-
-```bash
-# Quick API test
-node test-api.js
-
-# Verbose test with full response
-node test-api-verbose.js
+# Create a chart
+chart = BarChart({
+  data: [{ label: "Q1", value: 100 }, { label: "Q2", value: 150 }]
+})
 ```
 
-## Documentation
+## 📚 Resources
 
-- **USAGE_EXAMPLES.md** - Detailed usage examples and customization
-- **API_NOTES.md** - Z.AI API documentation and important notes
-- **PROJECT_STRUCTURE.md** - Project structure overview
+- [OpenUI Documentation](https://www.openui.com/docs)
+- [OpenUI Playground](https://www.openui.com/playground)
+- [Z.AI API Docs](https://docs.z.ai/api-reference/introduction)
+- [GLM Models](https://docs.z.ai/guides/llm/glm-5)
 
-## Configuration
+## 🤝 Contributing
 
-Edit `.env` to change the model:
-```env
-ZAI_MODEL=glm-5.1
-ZAI_API_KEY=your-api-key-here
-```
+Contributions welcome! Feel free to open issues or submit PRs.
+
+## 📄 License
+
+MIT License - feel free to use in your projects!
+
+---
+
+**Built with ❤️ using GLM-5.1 + OpenUI**
