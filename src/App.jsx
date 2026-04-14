@@ -6,8 +6,7 @@ import { containsOpenUILang } from './utils/text-formatter';
 import './App.css';
 
 // Configuration
-const API_KEY = 'be923920d99340cbbda05e5cee5ab29c.2TvFcEuEG8hGoktA';
-const BASE_URL = 'https://api.z.ai/api/coding/paas/v4';
+const API_BASE = '/api/chat'; // Server-side proxy (avoids CORS issues)
 const MODEL = 'glm-4.7';
 
 // Generate the system prompt from the actual library definition + examples
@@ -51,11 +50,10 @@ export default function App() {
     setError(null);
 
     try {
-      const response = await fetch(`${BASE_URL}/chat/completions`, {
+      const response = await fetch(API_BASE, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${API_KEY}`
         },
         body: JSON.stringify({
           model: MODEL,
