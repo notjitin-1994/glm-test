@@ -21,7 +21,7 @@ export default function App() {
   const messageHistoryRef = useRef([
     {
       role: 'system',
-      content: 'You are a helpful AI assistant powered by GLM-5.1. When displaying data, use cards, tables, or charts with OpenUI Lang. For general text responses, use clean formatting without markdown, bullets, or AI filler phrases.'
+      content: 'IMPORTANT: You are a helpful AI assistant powered by GLM-5.1.\n\nWhen you need to display data, forms, cards, tables, or charts, you MUST use OpenUI Lang syntax. Examples:\n\n- For a todo list: TodoList({items: [{label: "Buy groceries", completed: false}]})\n- For a chart: BarChart({data: [{label: "Q1", value: 100}, {label: "Q2", value: 200}]})\n- For a contact form: Form({fields: {name: {type: "text", label: "Name", required: true}, email: {type: "email", label: "Email", required: true}, subject: {type: "text", label: "Subject"}, message: {type: "textarea", label: "Message", rows: 4, required: true}}, submitButton: {label: "Send Message"}, cancelButton: {label: "Cancel"}})\n\nFor general text responses (without UI components), use clean plain text. Do NOT use any markdown syntax (no #, ##, ###, **, *, `). Do NOT use bullet points or numbered lists. Do NOT include AI filler phrases like "Certainly!" or "Here\'s the answer:". Just provide clear, direct text.\n\nRemember: ALWAYS use OpenUI Lang syntax for UI components. Never output raw HTML code like "<modal>" or "<form>". Only output the OpenUI Lang markup that will be rendered by the Renderer component.'
     }
   ]);
 
@@ -219,6 +219,7 @@ export default function App() {
             className="chat-button"
           >
             {isLoading ? '...' : 'Send'}
+          very
           </button>
         </form>
       </div>
