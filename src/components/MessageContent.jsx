@@ -2,6 +2,7 @@ import React from 'react';
 import { Renderer } from '@openuidev/react-lang';
 import { openuiChatLibrary } from '@openuidev/react-ui/genui-lib';
 import { containsOpenUILang, shouldDisplayAsMarkdown, formatAIResponse } from '../utils/text-formatter';
+import './MessageContent.css';
 
 export default function MessageContent({ content, role }) {
   // Check if content contains OpenUI Lang
@@ -15,7 +16,7 @@ export default function MessageContent({ content, role }) {
     );
   }
 
-  // Check if it should be displayed as markdown (code blocks, links, tables)
+  // Check if it should be displayed as markdown (code blocks, links)
   if (shouldDisplayAsMarkdown(content)) {
     return <MarkdownDisplay content={content} />;
   }
@@ -28,7 +29,7 @@ function PlainTextDisplay({ content }) {
   const formatted = formatAIResponse(content);
 
   return (
-    <div className="text-gray-800 whitespace-pre-wrap leading-relaxed">
+    <div className="plain-text-display">
       {formatted.split('\n\n').map((paragraph, idx) => (
         paragraph.trim() && (
           <p key={idx} className="mb-4">
@@ -45,7 +46,7 @@ function MarkdownDisplay({ content }) {
 
   // Simple markdown-like rendering for code blocks and links
   return (
-    <div className="text-gray-800 whitespace-pre-wrap leading-relaxed">
+    <div className="markdown-display">
       {formatted.split('\n').map((line, idx) => {
         // Code blocks
         if (line.startsWith('```')) {
@@ -55,7 +56,7 @@ function MarkdownDisplay({ content }) {
         // Content inside code block (simplified)
         if (line.trim() && !line.startsWith('```')) {
           return (
-            <p key={idx} className="mb-4 font-mono text-sm bg-gray-50 p-3 rounded border border-gray-200">
+            <p key={idx} className="code-block">
               {line}
             </p>
           );
@@ -68,12 +69,12 @@ function MarkdownDisplay({ content }) {
             const url = linkMatch[1];
             const text = line.replace(url, '').trim() || url;
             return (
-              <p key={idx} className="mb-4">
+              <p key={idx}>
                 <a
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-purple-600 hover:text-purple-700 underline"
+                  className="link-text"
                 >
                   {text}
                 </a>
@@ -85,7 +86,7 @@ function MarkdownDisplay({ content }) {
         // Regular text
         if (line.trim()) {
           return (
-            <p key={idx} className="mb-4">
+            <p key={idx}>
               {line}
             </p>
           );

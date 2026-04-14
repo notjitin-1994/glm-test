@@ -3,6 +3,7 @@ import MessageContent from './components/MessageContent';
 import { Renderer } from '@openuidev/react-lang';
 import { openuiChatLibrary } from '@openuidev/react-ui/genui-lib';
 import { containsOpenUILang } from './utils/text-formatter';
+import './App.css';
 
 // Configuration
 const API_KEY = 'be923920d99340cbbda05e5cee5ab29c.2TvFcEuEG8hGoktA';
@@ -141,100 +142,94 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 to-indigo-600 p-4">
-      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden" style={{ minHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
-        {/* Header */}
-        <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6 text-center">
-          <h1 className="text-3xl font-bold mb-2">🤖 GLM Chatbot</h1>
-          <p className="text-sm opacity-90">Powered by GLM-5.1 • Clean Text + Generative UI</p>
-        </div>
+    <div style={{ height: '100vh' }} className="chat-container">
+      <div className="chat-header">
+        <h1>🤖 GLM Chatbot</h1>
+        <p>Powered by GLM-5.1 • Clean Text + Generative UI</p>
+      </div>
 
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4" style={{ minHeight: 0 }}>
-          {messages.length === 0 && (
-            <div className="text-center text-gray-400 py-12">
-              <p className="text-xl mb-2">👋 Welcome!</p>
-              <p>Ask me anything - I'll respond with clean, formatted text</p>
-              <p className="text-sm mt-4 text-gray-500">
-                <strong>Pro Tip:</strong> Ask me to generate UI for dynamic components!
-              </p>
-              <p className="text-sm mt-2 text-gray-500">
-                Examples: "Create a todo list", "Show a chart", "Build a form"
-              </p>
-            </div>
-          )}
-
-          {messages.map((msg, idx) => (
-            <div
-              key={idx}
-              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-[80%] rounded-2xl px-5 py-3 ${
-                  msg.role === 'user'
-                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white'
-                    : 'bg-gray-50 text-gray-800 border border-gray-200'
-                }`}
-              >
-                {msg.role === 'user' ? (
-                  <p className="text-white">{msg.content}</p>
-                ) : msg.isStreaming ? (
-                  <div className="flex items-center gap-2">
-                    <div className="flex gap-1">
-                      <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                      <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                      <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                    </div>
-                    <span className="text-purple-600 text-sm">Thinking...</span>
-                  </div>
-                ) : (
-                  <>
-                    {containsOpenUILang(msg.content) ? (
-                      <Renderer
-                        response={msg.content}
-                        library={openuiChatLibrary}
-                        isStreaming={false}
-                        onAction={handleAction}
-                      />
-                    ) : (
-                      <MessageContent content={msg.content} role={msg.role} />
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
-          ))}
-
-          <div ref={chatEndRef} />
-        </div>
-
-        {/* Error Display */}
-        {error && (
-          <div className="mx-6 mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-            <p className="font-medium">❌ {error}</p>
+      <div className="chat-messages">
+        {messages.length === 0 && (
+          <div style={{ textAlign: 'center', color: 'rgb(156, 163, 175)', padding: '3rem 0' }}>
+            <p style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>👋 Welcome!</p>
+            <p>Ask me anything - I'll respond with clean, formatted text</p>
+            <p style={{ marginTop: '1rem', fontSize: '0.875rem', color: 'rgb(107, 114, 128)' }}>
+              <strong>Pro Tip:</strong> Ask me to generate UI for dynamic components!
+            </p>
+            <p style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: 'rgb(107, 114, 128)' }}>
+              Examples: "Create a todo list", "Show a chart", "Build a form"
+            </p>
           </div>
         )}
 
-        {/* Input */}
-        <div className="p-6 border-t border-gray-200 bg-white">
-          <form onSubmit={handleSubmit} className="flex gap-3">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask me anything... (text will be cleanly formatted)"
-              disabled={isLoading}
-              className="flex-1 px-5 py-3 border-2 border-gray-200 rounded-full focus:outline-none focus:border-purple-500 disabled:opacity-50 text-lg"
-            />
-            <button
-              type="submit"
-              disabled={isLoading || !input.trim()}
-              className="px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full font-semibold hover:opacity-90 disabled:opacity-50 transition-opacity"
+        {messages.map((msg, idx) => (
+          <div
+            key={idx}
+            style={{
+              display: 'flex',
+              justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
+              marginBottom: '1rem'
+            }}
+          >
+            <div
+              className={`message-bubble ${msg.role === 'user' ? 'message-bubble-user' : 'message-bubble-assistant'}`}
             >
-              {isLoading ? '...' : 'Send'}
-            </button>
-          </form>
+              {msg.role === 'user' ? (
+                <p>{msg.content}</p>
+              ) : msg.isStreaming ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', gap: '0.25rem' }}>
+                    <div style={{ width: '0.5rem', height: '0.5rem', backgroundColor: 'rgb(124, 58, 237)', borderRadius: '50%', animation: 'bounce 0ms' }}></div>
+                    <div style={{ width: '0.5rem', height: '0.5rem', backgroundColor: 'rgb(124, 58, 237)', borderRadius: '50%', animation: 'bounce 150ms' }}></div>
+                    <div style={{ width: '0.5rem', height: '0.5rem', backgroundColor: 'rgb(124, 58, 237)', borderRadius: '50%', animation: 'bounce 300ms' }}></div>
+                  </div>
+                  <span style={{ color: 'rgb(124, 58, 237)', fontSize: '0.875rem' }}>Thinking...</span>
+                </div>
+              ) : (
+                <>
+                  {containsOpenUILang(msg.content) ? (
+                    <Renderer
+                      response={msg.content}
+                      library={openuiChatLibrary}
+                      isStreaming={false}
+                      onAction={handleAction}
+                    />
+                  ) : (
+                    <MessageContent content={msg.content} role={msg.role} />
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        ))}
+
+        <div ref={chatEndRef} />
+      </div>
+
+      {error && (
+        <div className="error-display">
+          <p>❌ {error}</p>
         </div>
+      )}
+
+      <div className="chat-input-area">
+        <form onSubmit={handleSubmit} className="chat-input-form">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask me anything... (text will be cleanly formatted)"
+            disabled={isLoading}
+            className="chat-input"
+          />
+          <button
+            type="submit"
+            disabled={isLoading || !input.trim()}
+            className="chat-button"
+          >
+            {isLoading ? '...' : 'Send'}
+          </button>
+        </form>
       </div>
     </div>
   );

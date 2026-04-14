@@ -1,0 +1,42 @@
+/* Message Content Styles */
+
+.message-content {
+  padding: 1rem;
+  line-height: 1.6;
+}
+
+.plain-text-display {
+  font-size: 1rem;
+  color: rgb(31, 41, 55);
+  line-height: 1.7;
+  font-weight: 400;
+}
+
+.markdown-display {
+  font-size: 1rem;
+  color: rgb(31, 41, 55);
+  line-height: 1.7;
+}
+
+.code-block {
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  background-color: rgb(249, 250, 251);
+  border: 1px solid rgb(229, 231, 235);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+.link-text {
+  color: rgb(124, 58, 237);
+  text-decoration: underline;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.link-text:hover {
+  color: rgb(99, 102, 241);
+}
