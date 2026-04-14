@@ -179,10 +179,8 @@ export default function App() {
                   </div>
                   <span style={{ color: 'rgb(124, 58, 237)', fontSize: '0.875rem' }}>Generating...</span>
                 </div>
-              ) : containsOpenUILang(msg.content) ? (
-                <GenerativeUI content={msg.content} />
               ) : (
-                <MessageContent content={msg.content} role={msg.role} />
+                <GenerativeUI content={msg.content} />
               )}
             </div>
           </div>
