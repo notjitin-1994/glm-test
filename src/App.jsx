@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
+import MessageContent from './components/MessageContent';
 import { Renderer } from '@openuidev/react-lang';
 import { openuiChatLibrary } from '@openuidev/react-ui/genui-lib';
+import { containsOpenUILang } from './utils/text-formatter';
 
 // Configuration
 const API_KEY = 'be923920d99340cbbda05e5cee5ab29c.2TvFcEuEG8hGoktA';
@@ -17,7 +19,7 @@ export default function App() {
   const messageHistoryRef = useRef([
     {
       role: 'system',
-      content: 'You are a helpful AI assistant powered by GLM-5.1. When displaying data, use cards, tables, or charts. Use OpenUI Lang syntax to generate interactive UI components.'
+      content: 'You are a helpful AI assistant powered by GLM-5.1. When displaying data, use cards, tables, or charts with OpenUI Lang. For general text responses, use clean formatting without markdown, bullets, or AI filler phrases.'
     }
   ]);
 
@@ -143,8 +145,8 @@ export default function App() {
       <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden" style={{ minHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
         {/* Header */}
         <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6 text-center">
-          <h1 className="text-3xl font-bold mb-2">🤖 GLM Chatbot with Generative UI</h1>
-          <p className="text-sm opacity-90">Powered by GLM-5.1 + OpenUI</p>
+          <h1 className="text-3xl font-bold mb-2">🤖 GLM Chatbot</h1>
+          <p className="text-sm opacity-90">Powered by GLM-5.1 • Clean Text + Generative UI</p>
         </div>
 
         {/* Messages */}
@@ -152,8 +154,13 @@ export default function App() {
           {messages.length === 0 && (
             <div className="text-center text-gray-400 py-12">
               <p className="text-xl mb-2">👋 Welcome!</p>
-              <p>Ask me anything - I can generate interactive UI components!</p>
-              <p className="text-sm mt-2">Try: "Show me a weather card", "Create a todo list", or "Display a chart"</p>
+              <p>Ask me anything - I'll respond with clean, formatted text</p>
+              <p className="text-sm mt-4 text-gray-500">
+                <strong>Pro Tip:</strong> Ask me to generate UI for dynamic components!
+              </p>
+              <p className="text-sm mt-2 text-gray-500">
+                Examples: "Create a todo list", "Show a chart", "Build a form"
+              </p>
             </div>
           )}
 
@@ -170,7 +177,7 @@ export default function App() {
                 }`}
               >
                 {msg.role === 'user' ? (
-                  <p>{msg.content}</p>
+                  <p className="text-white">{msg.content}</p>
                 ) : msg.isStreaming ? (
                   <div className="flex items-center gap-2">
                     <div className="flex gap-1">
@@ -178,15 +185,21 @@ export default function App() {
                       <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
                       <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                     </div>
-                    <span className="text-purple-600 text-sm">Generating UI...</span>
+                    <span className="text-purple-600 text-sm">Thinking...</span>
                   </div>
                 ) : (
-                  <Renderer
-                    response={msg.content}
-                    library={openuiChatLibrary}
-                    isStreaming={msg.isStreaming}
-                    onAction={handleAction}
-                  />
+                  <>
+                    {containsOpenUILang(msg.content) ? (
+                      <Renderer
+                        response={msg.content}
+                        library={openuiChatLibrary}
+                        isStreaming={false}
+                        onAction={handleAction}
+                      />
+                    ) : (
+                      <MessageContent content={msg.content} role={msg.role} />
+                    )}
+                  </>
                 )}
               </div>
             </div>
@@ -198,7 +211,7 @@ export default function App() {
         {/* Error Display */}
         {error && (
           <div className="mx-6 mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-            <p className="font-medium">❌ Error: {error}</p>
+            <p className="font-medium">❌ {error}</p>
           </div>
         )}
 
@@ -209,7 +222,7 @@ export default function App() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask me anything... (try: 'Create a card', 'Show a table')"
+              placeholder="Ask me anything... (text will be cleanly formatted)"
               disabled={isLoading}
               className="flex-1 px-5 py-3 border-2 border-gray-200 rounded-full focus:outline-none focus:border-purple-500 disabled:opacity-50 text-lg"
             />
