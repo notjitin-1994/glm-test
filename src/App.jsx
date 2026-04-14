@@ -1,15 +1,21 @@
 import { useState, useRef, useEffect } from 'react';
 import MessageContent from './components/MessageContent';
 import GenerativeUI from './components/GenerativeUI';
-import { Renderer } from '@openuidev/react-lang';
-import { openuiChatLibrary } from '@openuidev/react-ui/genui-lib';
+import { openuiChatLibrary, openuiChatPromptOptions } from '@openuidev/react-ui/genui-lib';
 import { containsOpenUILang } from './utils/text-formatter';
 import './App.css';
 
 // Configuration
 const API_KEY = 'be923920d99340cbbda05e5cee5ab29c.2TvFcEuEG8hGoktA';
 const BASE_URL = 'https://api.z.ai/api/coding/paas/v4';
-const MODEL = 'glm-5.1';  // Switching to GLM-4.7 for better OpenUI support
+const MODEL = 'glm-4.7';
+
+// Generate the system prompt from the actual library definition + examples
+const OPENUI_SYSTEM_PROMPT = openuiChatLibrary.prompt({
+  examples: openuiChatPromptOptions.examples,
+  additionalRules: openuiChatPromptOptions.additionalRules,
+  preamble: 'You are a helpful AI assistant. When showing structured data, tables, charts, forms, or interactive content, use OpenUI Lang. For simple text answers, use plain text without markdown.',
+});
 
 export default function App() {
   const [messages, setMessages] = useState([]);
@@ -19,35 +25,7 @@ export default function App() {
   const chatEndRef = useRef(null);
 
   const messageHistoryRef = useRef([
-    {
-      role: 'system',
-      content: `IMPORTANT: You are a helpful AI assistant powered by GLM-5.1.
-
-When you need to display data, forms, cards, tables, or charts, you MUST use OpenUI Lang syntax with these EXACT components:
-
-AVAILABLE COMPONENTS:
-1. Card - Use: Card({title: "Your Title", body: Stack([Text("content text"), ...])})
-2. Button - Use: Button({label: "Click me", variant: "primary"})
-3. Form - Use: Form({fields: {name: {type: "text", label: "Full Name", required: true}, email: {type: "email", label: "Email", required: true}, subject: {type: "text", label: "Subject"}, message: {type: "textarea", label: "Message", rows: 4, required: true}}, submitButton: {label: "Send", variant: "primary"}})
-4. Table - Use: Table({columns: ["Name", "Role", "Email"], rows: [["Alice", "Admin", "alice@example.com"], ["Bob", "User", "bob@example.com"]]})
-5. BarChart - Use: BarChart({data: [{label: "Q1", value: 100}, {label: "Q2", value: 200}, {label: "Q3", value: 150}], xLabel: "Quarter", yLabel: "Sales"})
-6. Text - Use: Text("Your content here")
-7. Image - Use: Image({src: "https://example.com/image.jpg", alt: "Description", width: 200, height: 200})
-8. Badge - Use: Badge({label: "Status", variant: "success"|"warning"|"error"})
-9. ProgressBar - Use: ProgressBar({value: 75, max: 100, label: "Loading..."})
-10. Alert - Use: Alert({variant: "info"|"warning"|"error", title: "Title", message: "Your message here"})
-11. Tabs - Use: Tabs({items: [{label: "Tab 1", content: Stack([...])}, {label: "Tab 2", content: Text("Content for tab 2")}]})
-12. Accordion - Use: Accordion({items: [{label: "Section 1", content: Text("Content for section 1")}, {label: "Section 2", content: Text("Content for section 2")}]})
-13. Collapse - Use: Collapse({title: "Title", content: Stack([...])})
-
-RULES:
-- ONLY use these exact component types. Do NOT use custom syntax like "card = Card({...})" or "component = MyComponent(...)".
-- Always use the proper structure: ComponentName({props...}) or Stack([...]) not single arguments.
-
-For general text responses (without UI components), use clean plain text. Do NOT use any markdown syntax (no #, ##, ###, **, *, \`).
-
-Remember: The OpenUI Renderer will parse your output. Only output valid OpenUI Lang component definitions as shown above.`
-    }
+    { role: 'system', content: OPENUI_SYSTEM_PROMPT }
   ]);
 
   useEffect(() => {
@@ -61,11 +39,9 @@ Remember: The OpenUI Renderer will parse your output. Only output valid OpenUI L
     const userMessage = input.trim();
     setInput('');
 
-    // Add user message to display
     const newMessages = [...messages, { role: 'user', content: userMessage }];
     setMessages(newMessages);
 
-    // Update history
     messageHistoryRef.current = [
       ...messageHistoryRef.current,
       { role: 'user', content: userMessage }
@@ -93,11 +69,9 @@ Remember: The OpenUI Renderer will parse your output. Only output valid OpenUI L
         throw new Error(`API error: ${response.status} ${response.statusText}`);
       }
 
-      // Create assistant message entry
       const assistantMessage = { role: 'assistant', content: '', isStreaming: true };
       setMessages([...newMessages, assistantMessage]);
 
-      // Stream response
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let accumulatedContent = '';
@@ -121,7 +95,6 @@ Remember: The OpenUI Renderer will parse your output. Only output valid OpenUI L
               if (content) {
                 accumulatedContent += content;
 
-                // Update message content
                 setMessages(prev => {
                   const updated = [...prev];
                   const lastMsg = updated[updated.length - 1];
@@ -132,13 +105,12 @@ Remember: The OpenUI Renderer will parse your output. Only output valid OpenUI L
                 });
               }
             } catch (e) {
-              // Skip invalid JSON
+              // Skip invalid JSON chunks
             }
           }
         }
       }
 
-      // Update history with assistant response
       messageHistoryRef.current = [
         ...messageHistoryRef.current,
         { role: 'assistant', content: accumulatedContent }
@@ -155,7 +127,6 @@ Remember: The OpenUI Renderer will parse your output. Only output valid OpenUI L
 
     } catch (err) {
       setError(err.message);
-      // Remove user message from history on error
       messageHistoryRef.current = messageHistoryRef.current.slice(0, -1);
     } finally {
       setIsLoading(false);
@@ -170,19 +141,19 @@ Remember: The OpenUI Renderer will parse your output. Only output valid OpenUI L
     <div style={{ height: '100vh' }} className="chat-container">
       <div className="chat-header">
         <h1>🤖 GLM Chatbot</h1>
-        <p>Powered by GLM-5.1 • Clean Text + Generated UI</p>
+        <p>Powered by GLM-4.7 • Generative UI with OpenUI</p>
       </div>
 
       <div className="chat-messages">
         {messages.length === 0 && (
           <div style={{ textAlign: 'center', color: 'rgb(156, 163, 175)', padding: '3rem 0' }}>
             <p style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>👋 Welcome!</p>
-            <p>Ask me anything - I'll respond with clean text or generate interactive UI</p>
+            <p>Ask me anything — I'll respond with clean text or interactive UI components</p>
             <p style={{ marginTop: '1rem', fontSize: '0.875rem', color: 'rgb(107, 114, 128)' }}>
-              <strong>Pro Tip:</strong> Ask me to generate UI components!
+              <strong>Try:</strong> "Show me a table of programming languages"
             </p>
             <p style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: 'rgb(107, 114, 128)' }}>
-              Examples: "Create a todo list", "Show a chart", "Build a form"
+              "Create a contact form" • "Show a bar chart of quarterly sales"
             </p>
           </div>
         )}
@@ -208,7 +179,7 @@ Remember: The OpenUI Renderer will parse your output. Only output valid OpenUI L
                     <div style={{ width: '0.5rem', height: '0.5rem', backgroundColor: 'rgb(124, 58, 237)', borderRadius: '50%', animation: 'bounce 150ms' }}></div>
                     <div style={{ width: '0.5rem', height: '0.5rem', backgroundColor: 'rgb(124, 58, 237)', borderRadius: '50%', animation: 'bounce 300ms' }}></div>
                   </div>
-                  <span style={{ color: 'rgb(124, 58, 237)', fontSize: '0.875rem' }}>Generating UI...</span>
+                  <span style={{ color: 'rgb(124, 58, 237)', fontSize: '0.875rem' }}>Generating...</span>
                 </div>
               ) : containsOpenUILang(msg.content) ? (
                 <GenerativeUI content={msg.content} />
@@ -234,7 +205,7 @@ Remember: The OpenUI Renderer will parse your output. Only output valid OpenUI L
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask me anything... (clean text or generate UI)"
+            placeholder="Ask me anything... (text or generate UI)"
             disabled={isLoading}
             className="chat-input"
           />
