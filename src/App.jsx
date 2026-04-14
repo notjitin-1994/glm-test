@@ -9,7 +9,7 @@ import './App.css';
 // Configuration
 const API_KEY = 'be923920d99340cbbda05e5cee5ab29c.2TvFcEuEG8hGoktA';
 const BASE_URL = 'https://api.z.ai/api/coding/paas/v4';
-const MODEL = 'glm-5.1';
+const MODEL = 'glm-5.1';  // Switching to GLM-4.7 for better OpenUI support
 
 export default function App() {
   const [messages, setMessages] = useState([]);
@@ -21,7 +21,32 @@ export default function App() {
   const messageHistoryRef = useRef([
     {
       role: 'system',
-      content: 'IMPORTANT: You are a helpful AI assistant powered by GLM-5.1.\n\nWhen you need to display data, forms, cards, tables, or charts, you MUST use OpenUI Lang syntax. Examples:\n\n- For a todo list: TodoList({items: [{label: "Buy groceries", completed: false}]})\n- For a chart: BarChart({data: [{label: "Q1", value: 100}, {label: "Q2", value: 200}]})\n- For a contact form: Form({fields: {name: {type: "text", label: "Name", required: true}, email: {type: "email", label: "Email", required: true}, subject: {type: "text", label: "Subject"}, message: {type: "textarea", label: "Message", rows: 4, required: true}}, submitButton: {label: "Send Message"}, cancelButton: {label: "Cancel"}})\n\nFor general text responses (without UI components), use clean plain text. Do NOT use any markdown syntax (no #, ##, ###, **, *, `). Do NOT use bullet points or numbered lists. Do NOT include AI filler phrases like "Certainly!" or "Here\'s the answer:". Just provide clear, direct text.\n\nRemember: ALWAYS use OpenUI Lang syntax for UI components. Never output raw HTML code like "<modal>" or "<form>". Only output the OpenUI Lang markup that will be rendered by the Renderer component.'
+      content: `IMPORTANT: You are a helpful AI assistant powered by GLM-5.1.
+
+When you need to display data, forms, cards, tables, or charts, you MUST use OpenUI Lang syntax with these EXACT components:
+
+AVAILABLE COMPONENTS:
+1. Card - Use: Card({title: "Your Title", body: Stack([Text("content text"), ...])})
+2. Button - Use: Button({label: "Click me", variant: "primary"})
+3. Form - Use: Form({fields: {name: {type: "text", label: "Full Name", required: true}, email: {type: "email", label: "Email", required: true}, subject: {type: "text", label: "Subject"}, message: {type: "textarea", label: "Message", rows: 4, required: true}}, submitButton: {label: "Send", variant: "primary"}})
+4. Table - Use: Table({columns: ["Name", "Role", "Email"], rows: [["Alice", "Admin", "alice@example.com"], ["Bob", "User", "bob@example.com"]]})
+5. BarChart - Use: BarChart({data: [{label: "Q1", value: 100}, {label: "Q2", value: 200}, {label: "Q3", value: 150}], xLabel: "Quarter", yLabel: "Sales"})
+6. Text - Use: Text("Your content here")
+7. Image - Use: Image({src: "https://example.com/image.jpg", alt: "Description", width: 200, height: 200})
+8. Badge - Use: Badge({label: "Status", variant: "success"|"warning"|"error"})
+9. ProgressBar - Use: ProgressBar({value: 75, max: 100, label: "Loading..."})
+10. Alert - Use: Alert({variant: "info"|"warning"|"error", title: "Title", message: "Your message here"})
+11. Tabs - Use: Tabs({items: [{label: "Tab 1", content: Stack([...])}, {label: "Tab 2", content: Text("Content for tab 2")}]})
+12. Accordion - Use: Accordion({items: [{label: "Section 1", content: Text("Content for section 1")}, {label: "Section 2", content: Text("Content for section 2")}]})
+13. Collapse - Use: Collapse({title: "Title", content: Stack([...])})
+
+RULES:
+- ONLY use these exact component types. Do NOT use custom syntax like "card = Card({...})" or "component = MyComponent(...)".
+- Always use the proper structure: ComponentName({props...}) or Stack([...]) not single arguments.
+
+For general text responses (without UI components), use clean plain text. Do NOT use any markdown syntax (no #, ##, ###, **, *, \`).
+
+Remember: The OpenUI Renderer will parse your output. Only output valid OpenUI Lang component definitions as shown above.`
     }
   ]);
 
@@ -219,7 +244,6 @@ export default function App() {
             className="chat-button"
           >
             {isLoading ? '...' : 'Send'}
-          very
           </button>
         </form>
       </div>
