@@ -3,8 +3,8 @@ import { Renderer } from '@openuidev/react-lang';
 import { openuiChatLibrary } from '@openuidev/react-ui/genui-lib';
 
 export default function GenerativeUI({ content }) {
-  // Parse OpenUI Lang and extract ONLY the component usage
-  // Hide ALL syntax including component definitions like "card = Card({...})"
+  // Parse OpenUI Lang and extract ONLY the component usage (not definitions)
+  // Hide the raw syntax
 
   const lines = content.split('\n');
   let cleanContent = '';
@@ -15,14 +15,19 @@ export default function GenerativeUI({ content }) {
       continue;
     }
 
-    // Skip ALL lines that look like component definitions or assignments
-    // This includes: "card =", "chart =", "prop =", "item =", etc.
-    if (line.includes('=') || line.includes('Stack(') || line.includes('Text(')) {
+    // Component definition pattern: component = Component({...})
+    // We want to SKIP these (they're syntax, not UI usage)
+    if (/^[a-z-]+\s*=\s*[A-Z][a-z][a-z]*\(/.test(line)) {
       continue;
     }
 
-    // Only keep lines that look like actual UI calls
-    // Examples: Card({title: "..."}), Stack([...]), Text("...")
+    // Also skip lines that look like Stack([...]) or Text(...)
+    // These are also syntax, not UI usage
+    if (/(?:Stack|Text|List|Array)\s*\(/.test(line)) {
+      continue;
+    }
+
+    // Keep lines that look like actual UI calls: Component({...}), props={...}), etc.
     if (!line.includes('=') && line.trim()) {
       cleanContent += line + '\n';
     }
