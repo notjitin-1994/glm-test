@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import MessageContent from './components/MessageContent';
+import GenerativeUI from './components/GenerativeUI';
 import { Renderer } from '@openuidev/react-lang';
 import { openuiChatLibrary } from '@openuidev/react-ui/genui-lib';
 import { containsOpenUILang } from './utils/text-formatter';
@@ -138,23 +139,22 @@ export default function App() {
 
   const handleAction = (actionId, actionData) => {
     console.log('Action received:', actionId, actionData);
-    // Handle button clicks, form submissions, etc.
   };
 
   return (
     <div style={{ height: '100vh' }} className="chat-container">
       <div className="chat-header">
         <h1>🤖 GLM Chatbot</h1>
-        <p>Powered by GLM-5.1 • Clean Text + Generative UI</p>
+        <p>Powered by GLM-5.1 • Clean Text + Generated UI</p>
       </div>
 
       <div className="chat-messages">
         {messages.length === 0 && (
           <div style={{ textAlign: 'center', color: 'rgb(156, 163, 175)', padding: '3rem 0' }}>
             <p style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>👋 Welcome!</p>
-            <p>Ask me anything - I'll respond with clean, formatted text</p>
+            <p>Ask me anything - I'll respond with clean text or generate interactive UI</p>
             <p style={{ marginTop: '1rem', fontSize: '0.875rem', color: 'rgb(107, 114, 128)' }}>
-              <strong>Pro Tip:</strong> Ask me to generate UI for dynamic components!
+              <strong>Pro Tip:</strong> Ask me to generate UI components!
             </p>
             <p style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: 'rgb(107, 114, 128)' }}>
               Examples: "Create a todo list", "Show a chart", "Build a form"
@@ -183,21 +183,12 @@ export default function App() {
                     <div style={{ width: '0.5rem', height: '0.5rem', backgroundColor: 'rgb(124, 58, 237)', borderRadius: '50%', animation: 'bounce 150ms' }}></div>
                     <div style={{ width: '0.5rem', height: '0.5rem', backgroundColor: 'rgb(124, 58, 237)', borderRadius: '50%', animation: 'bounce 300ms' }}></div>
                   </div>
-                  <span style={{ color: 'rgb(124, 58, 237)', fontSize: '0.875rem' }}>Thinking...</span>
+                  <span style={{ color: 'rgb(124, 58, 237)', fontSize: '0.875rem' }}>Generating UI...</span>
                 </div>
+              ) : containsOpenUILang(msg.content) ? (
+                <GenerativeUI content={msg.content} />
               ) : (
-                <>
-                  {containsOpenUILang(msg.content) ? (
-                    <Renderer
-                      response={msg.content}
-                      library={openuiChatLibrary}
-                      isStreaming={false}
-                      onAction={handleAction}
-                    />
-                  ) : (
-                    <MessageContent content={msg.content} role={msg.role} />
-                  )}
-                </>
+                <MessageContent content={msg.content} role={msg.role} />
               )}
             </div>
           </div>
@@ -218,7 +209,7 @@ export default function App() {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask me anything... (text will be cleanly formatted)"
+            placeholder="Ask me anything... (clean text or generate UI)"
             disabled={isLoading}
             className="chat-input"
           />
