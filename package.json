@@ -1,0 +1,23 @@
+{
+  "name": "glm-chatbot-test",
+  "version": "1.0.0",
+  "description": "Simple chatbot wrapper for Z.AI GLM-5 using Coding Plan API",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "glm",
+    "z.ai",
+    "chatbot",
+    "ai"
+  ],
+  "author": "Jitin Nair",
+  "license": "MIT",
+  "dependencies": {
+    "openai": "^4.73.0",
+    "dotenv": "^16.4.7",
+    "readline": "^1.3.0"
+  }
+}
